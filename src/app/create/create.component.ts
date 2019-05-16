@@ -7,6 +7,7 @@ import { ProfileserviceService } from '../profileservice.service';
   styleUrls: ['./create.component.css']
 })
 export class CreateComponent implements OnInit {
+  title='create profile';
   profileForm = new FormGroup({
     firstName: new FormControl(),
     lastName: new FormControl(),

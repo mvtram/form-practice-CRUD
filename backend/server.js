@@ -1,31 +1,19 @@
-express=require('express');
-cors=require('cors');
-/*
-The package contains a middleware for the Express server, so that you can enable
- CORS (Cross-Origin Resource Sharing). CORS is
- a system, consisting of transmitting
- HTTP headers, that determines whether to block or fulfill
-  requests for restricted resources on a web page from another
-  domain outside the domain from which the resource originated.
-The same-origin security policy forbids “cross-domain” requests by
-default. CORS gives web servers cross-domain access
-controls, which enable secure cross-domain data transfers
-*/
-
-mongoose=require('mongoose');
+var express=require('express');
 path = require('path');
-bodyParser=require('body-parser');
+var bodyParser=require('body-parser');
+var cors=require('cors');
+var mongoose=require('mongoose');
 config = require('../config/DB');
+
 mongoose.Promise = global.Promise;
-mongoose.connect('mongodb://localhost:27017/forms', {useNewUrlParser: true}).then(
+mongoose.connect('mongodb://localhost:27017/forms',
+{useNewUrlParser: true}).then(
   () => {console.log('Database is connected')},
   err => {console.log('Database is not  connected'+err)}
-
   );
 
 
  const app=express();
- const router=express.Router();
  app.use(bodyParser.json());
  app.use(cors());
 //app.use('/', router);
@@ -44,15 +32,40 @@ let AdUnitSchema = new mongoose.Schema({
 
 });
 let AdUnit = mongoose.model('AdUnit', AdUnitSchema);
+app.get('/users/list',function(req,res,next){
+  //console.log('fetch data');
+  //mongoose.connect('mongodb://localhost:27017/forms',{useNewUrlParser: true }, function (err, db) {
+
+    // var cursor = db.collection('adunits').find({
+      //firstname: 'mahesh',
+
+  AdUnit.find({}, function(err, result) {
+    res.json(result);
+    //console.log(result);
+  })
+});
+
 
 app.post('/users/add', function(req,res) {
-  console.log(req.body);
+  //console.log(req.body);
   //res.json(req.body);
   //res.send('request is sent');
   var form =new AdUnit(req.body);
+
   form.save(function(err){
     res.status(201);
   })
 
+
+});
+//  app.use('/profiles',profileRoutes);
+app.delete('/users/delete/:id',function (req,res) {
+  AdUnit.deleteOne({ _id: req.params.id},function (err,result) {
+    console.log(result);
+res.json(result);
+  })
+  //console.log(req.params.id);
+
 })
+
 const server = app.listen(4000, ()=>console.log('express started running on server 4000'));
